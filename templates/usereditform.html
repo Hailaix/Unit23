@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Edit {{user.full_name}}
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <form method="post" class="col col-10">
+        <h1>Editing {{user.full_name}}</h1>
+        <div class="form-group">
+            <label for="first_name">First Name:</label>
+            <input type="text" class="form-control" name="first_name" id="first_name" 
+            value="{{user.first_name}}">
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last Name:</label>
+            <input type="text" class="form-control" name="last_name" id="last_name"
+            value="{{user.last_name}}">
+        </div>
+        <div class="form-group">
+            <label for="image_url">Image URL</label>
+            <input type="url" class="form-control" name="image_url" id="image_url"
+            value="{{user.image_url}}">
+        </div>
+        <a href="/users/{{user.id}}" class="btn btn-outline-primary"> Cancel </a>
+        <input type="submit" class="btn btn-success" value="Save">
+    </form>
+</div>
+{% endblock %}
