@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,13 +17,24 @@
 
     <title>{% block title %}{% endblock %}</title>
 </head>
+
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <a href="/" class="navbar-brand">Blogly</a>
     </nav>
     <div class="container-fluid">
+        {% with msgs = get_flashed_messages(with_categories=true) %}
+            {% if msgs %}
+                <section class="flashs">
+                    {% for cat,msg in msgs %}
+                        <div class="alert alert-{{cat}}" role="alert">{{msg}}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
         {% block body %}
         {% endblock %}
     </div>
 </body>
+
 </html>

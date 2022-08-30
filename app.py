@@ -1,6 +1,6 @@
 """Blogly application."""
 
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, flash
 from models import db, connect_db, User, Post
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -37,6 +37,12 @@ def userform_submit():
     first_name = request.form["first_name"].strip()
     last_name = request.form["last_name"].strip()
     image_url = request.form["image_url"].strip()
+    if not first_name or not last_name or len(first_name) > 32 or len(last_name) > 32:
+        if not first_name or len(first_name) > 32:
+            flash("First Name must be between 1 and 32 characters","danger")
+        if not last_name or len(last_name) > 32:
+            flash("Last name must be between 1 and 32 characters", "danger")
+        return redirect("/users/new")
     if not image_url:
         image_url = None
     newuser = User(first_name=first_name,last_name=last_name,image_url=image_url)
@@ -64,6 +70,13 @@ def edit_user_submit(user_id):
     new_fname = request.form["first_name"].strip()
     new_lname = request.form["last_name"].strip()
     new_img_url = request.form["image_url"].strip()
+
+    if len(new_fname) > 32 or len(new_lname) > 32:
+        if len(new_fname) > 32:
+            flash("First Name must be between 1 and 32 characters","danger")
+        if len(new_lname) > 32:
+            flash("Last name must be between 1 and 32 characters", "danger")
+        return redirect(f"/users/{user_id}/edit")
     
     curruser = User.query.get_or_404(user_id)
     
@@ -99,11 +112,15 @@ def postform_submit(user_id):
     """Creates new post on POST and redirects back to user page"""
     post_title = request.form["title"].strip()
     post_content = request.form["content"].strip()
-    new_post = Post(title=post_title, content=post_content, user_id=user_id)
+    if post_title:
+        new_post = Post(title=post_title, content=post_content, user_id=user_id)
 
-    db.session.add(new_post)
-    db.session.commit()
-    return redirect(f"/users/{user_id}")
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(f"/users/{user_id}")
+    else:
+        flash("Posts must have a Title", "danger")
+        return redirect(f"/users/{user_id}/posts/new")
 
 @app.route("/posts/<int:post_id>")
 def post_details(post_id):
