@@ -1,6 +1,6 @@
 """Seed users table in blogly database"""
 
-from models import User, db
+from models import User, db, Post
 from app import app
 
 # Create all tables
@@ -9,6 +9,7 @@ db.create_all()
 
 # If table isn't empty, empty it
 User.query.delete()
+Post.query.delete()
 
 # add users
 anyone = User(first_name="Alfred", last_name="Anyone")

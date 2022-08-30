@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{post.title}}
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col">
+        <h1>{{post.title}}</h1>
+        <pre>{{post.content}}</pre>
+        <br>
+        <p class="rounded bg-light rounded">
+            <i>
+                By {{post.author.full_name}}
+            </i>
+        </p>
+        <a href="/users/{{post.author.id}}" class="btn btn-outline-primary">Cancel</a>
+        <a href="/posts/{{post.id}}/edit" class="btn btn-primary">Edit</a>
+        <form action="/posts/{{post.id}}/delete" style="display:inline;" method="post">
+            <input type="submit" class="btn btn-danger" value="Delete">
+        </form>
+    </div>
+</div>
+{% endblock %}
