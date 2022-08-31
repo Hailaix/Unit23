@@ -41,7 +41,7 @@ def userform_submit():
         if not first_name or len(first_name) > 32:
             flash("First Name must be between 1 and 32 characters","danger")
         if not last_name or len(last_name) > 32:
-            flash("Last name must be between 1 and 32 characters", "danger")
+            flash("Last Name must be between 1 and 32 characters", "danger")
         return redirect("/users/new")
     if not image_url:
         image_url = None
@@ -75,7 +75,7 @@ def edit_user_submit(user_id):
         if len(new_fname) > 32:
             flash("First Name must be between 1 and 32 characters","danger")
         if len(new_lname) > 32:
-            flash("Last name must be between 1 and 32 characters", "danger")
+            flash("Last Name must be between 1 and 32 characters", "danger")
         return redirect(f"/users/{user_id}/edit")
     
     curruser = User.query.get_or_404(user_id)
@@ -154,7 +154,8 @@ def edit_post_submit(post_id):
 @app.route("/posts/<int:post_id>/delete", methods=["POST"])
 def delete_post(post_id):
     """delete post with id post_id"""
-    Post.query.filter_by(id=post_id).delete()
+    post = Post.query.get_or_404(post_id)
+    db.session.delete(post)
     db.session.commit()
-    return redirect("/")
+    return redirect(f"/users/{post.user_id}")
 # --------------------------------------------------------------------------------

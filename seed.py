@@ -23,3 +23,8 @@ db.session.add(noone)
 
 # Commit--otherwise, this never gets saved!
 db.session.commit()
+
+p = Post(title="Is anyone here?", content="haha, just kidding, I'm anyone", user_id=anyone.id)
+
+db.session.add(p)
+db.session.commit()

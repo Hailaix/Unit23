@@ -36,6 +36,15 @@ class Post(db.Model):
     title = db.Column(db.String, nullable=False)
     content = db.Column(db.Text)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
     #User relationship
     author = db.relationship('User', backref="posts")
+
+    # readable time property
+    def _time_read(self):
+        """returns created_at in a formatted string"""
+        return self.created_at.strftime("%a %b %d %Y, %I:%M %p")
+    readable_date = property(
+        fget=_time_read,
+        doc="returns created_at in a readable format"
+    )
