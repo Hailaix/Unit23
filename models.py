@@ -48,3 +48,20 @@ class Post(db.Model):
         fget=_time_read,
         doc="returns created_at in a readable format"
     )
+
+class Tag(db.Model):
+    """Tag database model"""
+    __tablename__ = "tags"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False, unique=True)
+
+    # "Through" Relationship
+    posts = db.relationship('Post', secondary='posts_tags', backref='tags')
+
+class PostTag(db.Model):
+    """Many-to-Many between posts and tags"""
+    __tablename__ = "posts_tags"
+
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True)
