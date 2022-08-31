@@ -15,8 +15,9 @@ connect_db(app)
 
 @app.route("/")
 def index():
-    """(temp) redirects to users page"""
-    return redirect("/users")
+    """Shows the 5 most recent posts"""
+    most_recent = db.session.query(Post).order_by(Post.created_at.desc()).limit(5).all()
+    return render_template("home.html", posts=most_recent)
 
 
 # Part 1 Routes ------------------------------------------------------------------

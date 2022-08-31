@@ -19,18 +19,20 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark justify-content-start">
         <a href="/" class="navbar-brand">Blogly</a>
+        <a href="/users" class="nav-link text-light">Users</a>
+        <a href="/tags" class="nav-link text-light">Tags</a>
     </nav>
     <div class="container-fluid">
         {% with msgs = get_flashed_messages(with_categories=true) %}
-            {% if msgs %}
-                <section class="flashs">
-                    {% for cat,msg in msgs %}
-                        <div class="alert alert-{{cat}}" role="alert">{{msg}}</div>
-                    {% endfor %}
-                </section>
-            {% endif %}
+        {% if msgs %}
+        <section class="flashs">
+            {% for cat,msg in msgs %}
+            <div class="alert alert-{{cat}}" role="alert">{{msg}}</div>
+            {% endfor %}
+        </section>
+        {% endif %}
         {% endwith %}
         {% block body %}
         {% endblock %}
