@@ -1,7 +1,7 @@
 """Blogly application."""
 
 from flask import Flask, render_template, redirect, request, flash
-from models import db, connect_db, User, Post
+from models import db, connect_db, User, Post, Tag
 from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
@@ -158,4 +158,76 @@ def delete_post(post_id):
     db.session.delete(post)
     db.session.commit()
     return redirect(f"/users/{post.user_id}")
+# --------------------------------------------------------------------------------
+
+# Part 3 Routes ------------------------------------------------------------------
+
+@app.route("/tags")
+def all_tags():
+    """Lists all tags, with links to the tag detail page."""
+    tags = Tag.query.order_by(Tag.name.asc()).all()
+    return render_template("tags.html", tags=tags)
+
+@app.route("/tags/<int:tag_id>")
+def tag_details(tag_id):
+    """Show details about tag with id tag_id"""
+    tag = Tag.query.get_or_404(tag_id)
+    return render_template("tagpage.html", tag=tag)
+
+@app.route("/tags/new")
+def tagform():
+    """form page to create a new tag"""
+    return render_template("tagform.html")
+
+@app.route("/tags/new", methods=["POST"])
+def tagform_submit():
+    """create a new tag on submit of tag form"""
+    tname = request.form["name"].strip()
+    if len(tname) > 32 or not tname:
+        flash("tag name must be between 1 and 32 characters", "danger")
+        return redirect("/tags/new")
+    tagnames = db.session.query(Tag).all()
+    for tag in tagnames:
+        if tname == tag.name:
+            flash("Tag already exists", "warning")
+            return redirect("/tags/new")
+    newtag = Tag(name=tname)
+    db.session.add(newtag)
+    db.session.commit()
+    return redirect("/tags")
+
+@app.route("/tags/<int:tag_id>/edit")
+def edit_tag(tag_id):
+    """edit the tag with id tag_id"""
+    tag = Tag.query.get_or_404(tag_id)
+    return render_template("tageditform.html", tag=tag)
+
+@app.route("/tags/<int:tag_id>/edit", methods=["POST"])
+def edit_tag_submit(tag_id):
+    """edit the tag with id tag_id"""
+    tag = Tag.query.get_or_404(tag_id)
+    new_name = request.form["name"].strip()
+    if len(new_name) > 32:
+        flash("tag name must be between 1 and 32 characters", "danger")
+        return redirect(f"/tags/{tag_id}/edit")
+    if new_name:
+        tagnames = db.session.query(Tag).all()
+        for tag in tagnames:
+            if new_name == tag.name:
+                flash("Tag already exists", "warning")
+                return redirect("/tags/")
+        tag.name = new_name
+        db.session.add(tag)
+        db.session.commit()
+        return redirect("/tags")
+
+@app.route("/tags/<int:tag_id>/delete", methods=["POST"])
+def delete_tag(tag_id):
+    """deletes the tag with id tag_id"""
+    tag = Tag.query.get_or_404(tag_id)
+    db.session.delete(tag)
+    db.session.commit()
+    return redirect("/tags")
+
+    
 # --------------------------------------------------------------------------------

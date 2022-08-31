@@ -54,7 +54,7 @@ class Tag(db.Model):
     __tablename__ = "tags"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable=False, unique=True)
+    name = db.Column(db.String(32), nullable=False, unique=True)
 
     # "Through" Relationship
     posts = db.relationship('Post', secondary='posts_tags', backref='tags')
