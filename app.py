@@ -105,15 +105,20 @@ def delete_user(user_id):
 def postform(user_id):
     """creates a new post posted by the user with id user_id"""
     user = User.query.get_or_404(user_id)
-    return render_template("postform.html", user=user)
+    tags = Tag.query.all()
+    return render_template("postform.html", user=user, tags=tags)
 
 @app.route("/users/<int:user_id>/posts/new", methods=["POST"])
 def postform_submit(user_id):
     """Creates new post on POST and redirects back to user page"""
     post_title = request.form["title"].strip()
     post_content = request.form["content"].strip()
+    # post tags handling
+    tids = [int(tid) for tid in request.form.getlist("tags")]
+    tags = Tag.query.filter(Tag.id.in_(tids)).all()
+
     if post_title:
-        new_post = Post(title=post_title, content=post_content, user_id=user_id)
+        new_post = Post(title=post_title, content=post_content, user_id=user_id, tags=tags)
 
         db.session.add(new_post)
         db.session.commit()
@@ -132,7 +137,8 @@ def post_details(post_id):
 def edit_post(post_id):
     """edit the details of post with id post_id"""
     post = Post.query.get_or_404(post_id)
-    return render_template("posteditform.html", post=post)
+    tags = Tag.query.all()
+    return render_template("posteditform.html", post=post, tags=tags)
 
 @app.route("/posts/<int:post_id>/edit", methods=["POST"])
 def edit_post_submit(post_id):
@@ -140,12 +146,17 @@ def edit_post_submit(post_id):
     new_title = request.form["title"].strip()
     new_content = request.form["content"].strip()
 
+    # post tags handling
+    tids = [int(tid) for tid in request.form.getlist("tags")]
+    tags = Tag.query.filter(Tag.id.in_(tids)).all()
+
     post = Post.query.get_or_404(post_id)
 
     if new_title:
         post.title = new_title
     if new_content:
         post.content = new_content
+    post.tags = tags
 
     db.session.add(post)
     db.session.commit()
@@ -215,7 +226,7 @@ def edit_tag_submit(tag_id):
         for tag in tagnames:
             if new_name == tag.name:
                 flash("Tag already exists", "warning")
-                return redirect("/tags/")
+                return redirect("/tags")
         tag.name = new_name
         db.session.add(tag)
         db.session.commit()
@@ -229,5 +240,4 @@ def delete_tag(tag_id):
     db.session.commit()
     return redirect("/tags")
 
-    
 # --------------------------------------------------------------------------------
